@@ -156,25 +156,3 @@ void twi_stop(void)
   TWCR = (1 << TWEN) | (1 << TWSTO) | (1 << TWINT); // stop i2c hardware
   return;
 }
-
-/**
-  Initializes debugging
-*/
-void init_debug(void)
-{
-  bug.red = 0;
-  bug.green = 0;
-  bug.blue = 0;
-  DDRD = 0xff;
-  PORTD = 0;
-  return;
-}
-
-
-// Outputs a byte of data to LEDs
-void led_write(uint8_t byte)
-{
-  DDRD = 0xff; // OUTPUT
-  PORTD = byte;
-  return;
-}

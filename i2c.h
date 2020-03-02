@@ -80,15 +80,6 @@
 #define LCD_BLINK_OFF     0x00
 
 /**
-  Debugging LEDS
-*/
-struct debugging {
-  uint8_t red; // defaults all off
-  uint8_t green;
-  uint8_t blue;
-} bug;
-
-/**
   i2c LCD settings
 */
 struct i2c_lcd {
@@ -128,11 +119,6 @@ void lcd_send(uint8_t byte);
   Outputs a byte of data to LEDs
 */
 void led_write(uint8_t byte);
-
-/**
-  Initializes debugging
-*/
-void init_debug(void);
 
 /**
   Initialize I2C bus without setting an address to become slave
