@@ -5,19 +5,13 @@
 
 /**
   ~ Frequently played ~     :)
+  A Himitsu - Easier To Fade feat. Madi Larson
   Whatever happens, happens... // Verzache -> YouTube
   A Boogie Wit da Hoodie - Another Day Gone feat. Khalid
   A Boogie Wit da Hoodie - Me and My Guitar
   XXXTENTACION - MOONLIGHT
   Lil Peep - Save That Shit
 */
-
-/**
-  Debugging pins
-*/
-#define DEBUG_BLUE                PD2
-#define DEBUG_RED                 PD3
-#define DEBUG_GREEN               PD4
 
 /**
   TWI operation return codes
@@ -92,25 +86,7 @@ struct debugging {
   uint8_t red; // defaults all off
   uint8_t green;
   uint8_t blue;
-};
-
-// Outputs a byte of data to LEDs
-void led_write(uint8_t byte);
-
-/**
-  Initializes debugging
-*/
-void init_debug(struct debugging *bug);
-
-/**
-  Set specified LED
-*/
-void set(uint8_t pin);
-
-/**
-  Clears specified LED
-*/
-void clear(uint8_t pin);
+} bug;
 
 /**
   i2c LCD settings
@@ -122,7 +98,7 @@ struct i2c_lcd {
   uint8_t l_blink:1;       /* Cursor blinking on/off control                     || default 1 */
   uint8_t l_rows:1;        /* number of rows :: 0 = single row, 1 = double row   || default 0 */
   uint8_t l_cols:1;        /* Number of columns :: 0 = 16 cols , 1 = 20 cols     || default 0 */
-};
+} lcd;
 
 /**
   i2c bus settings
@@ -134,13 +110,35 @@ struct i2c_bus {
   uint8_t data;      /* Contains data to be written or data received */
   uint8_t b_state;   /* Tracks idle, transmitting, recieving, etc || default TW_READY */
   uint8_t retval;    /* Holds success/fail of last bus activity */
-};
+} bus;
+
+/**
+  LCD Write - 8 Bit
+  Encapsulation for I2C writing to LCD
+*/
+void lcd_write(uint8_t byte);
+
+/**
+  LCD Write - 4 bit
+  Encapsulation for I2C writing to LCD
+*/
+void lcd_send(uint8_t byte);
+
+/**
+  Outputs a byte of data to LEDs
+*/
+void led_write(uint8_t byte);
+
+/**
+  Initializes debugging
+*/
+void init_debug(void);
 
 /**
   Initialize I2C bus without setting an address to become slave
   Must receive bus & lcd structures
 */
-void twi_init(struct i2c_bus *bus, struct i2c_lcd *lcd);
+void twi_init(void);
 
 /**
   Sends start condition on bus
@@ -150,22 +148,22 @@ unsigned char twi_start(void);
 /**
   Set destination address of bus reads/writes
 */
-void twi_set_addr(struct i2c_bus *bus, uint8_t addr);
+void twi_set_addr(uint8_t addr);
 
 /**
   Places specifed byte into buffer
 */
-void twi_loadbuf(struct i2c_bus *bus, uint8_t byte);
+void twi_loadbuf(uint8_t byte);
 
 /**
   Write byte of data onto bus
 */
-unsigned char twi_write(struct i2c_bus *bus);
+unsigned char twi_write(void);
 
 /**
   Send contained address on bus with specified WRITE bit(0)
 */
-unsigned char twi_slaw(struct i2c_bus *bus);
+unsigned char twi_slaw(void);
 
 /**
   Private function
@@ -177,13 +175,3 @@ unsigned char _send_byte(uint8_t byte);
   Shutdown I2C hardware & exit the bus
 */
 void twi_stop(void);
-
-/**
-  Set pin ON
-*/
-void set(uint8_t pin);
-
-/**
-  Set pin OFF
-*/
-void clear(uint8_t pin);
