@@ -2,6 +2,7 @@
 
 #include <avr/io.h>
 #include <util/delay.h>
+#include <stdlib.h>
 
 /**
   ~ Frequently played ~     :)
@@ -46,6 +47,14 @@
 #define TW_BUS_ERROR              0x00
 
 /**
+  Operation types, for custom functions
+*/
+#define READ  0x01
+#define WRITE 0x00
+#define DATA  0x01
+#define CMD   0x00
+
+/**
   PINOUT for PCF8574T to LCD control pins
 */
 #define PCF_RS                    0b00000001  //P0 - PCF8574T Pin connected to RS
@@ -64,7 +73,7 @@
   LCD struct info, limited to 1 bit
 */
 
-#define LCD_BACKLIGHT_ON  0x01
+#define LCD_BACKLIGHT_ON  0x04
 #define LCD_BACKLIGHT_OFF 0x00
 
 #define LCD_DOUBLE_ROW    0x01
@@ -84,7 +93,7 @@
 */
 struct i2c_lcd {
   uint8_t l_addr;          /* Slave device address                               || default 0x27 */
-  uint8_t l_backlight:1;   /* Backlight on/off control                           || default 1 */
+  uint8_t l_backlight;   /* Backlight on/off control                           || default 1 */
   uint8_t l_cursor:1;      /* Cursor on/off control                              || default 1 */
   uint8_t l_blink:1;       /* Cursor blinking on/off control                     || default 1 */
   uint8_t l_rows:1;        /* number of rows :: 0 = single row, 1 = double row   || default 0 */
@@ -103,6 +112,28 @@ struct i2c_bus {
   uint8_t retval;    /* Holds success/fail of last bus activity */
 } bus;
 
+
+/**
+  HERE ARE THE FUNCTIONS FOR CONTROLLING THE LCD DISPLAY
+  HELPS TO NOT NEED TO WRITE 0X80, 0X03 ETC FOR COMMANDS EVERYTIME
+*/
+void clear_display(void);
+void set_position(uint8_t row, uint8_t column);
+void cursor_on(void);
+void cursor_off(void);
+void display_on(void);  // not the actual backlight
+void display_off(void); // not the actual backlight
+void screen_on(void);   // actual backlight -- turns on character display & backlight
+void screen_off(void); // actual backlight  -- turns off character display & backlight
+
+//test function to fill screen with characters
+void fill_screen(void);
+
+// Attempt to discover all devices on bus
+void sniff(void);
+uint8_t twi_nop(uint8_t address);
+
+
 /**
   LCD Write - 8 Bit
   Encapsulation for I2C writing to LCD
@@ -113,7 +144,19 @@ void lcd_write(uint8_t byte);
   LCD Write - 4 bit
   Encapsulation for I2C writing to LCD
 */
-void lcd_send(uint8_t byte);
+void lcd_send(uint8_t byte); // defaults to command
+
+/**
+  LCD Write - 4 bits
+  Writes specified byte of data to LCD(NOT FOR LCD COMMANDS)
+*/
+void lcd_dsend(uint8_t byte); // use this for writing actual data to DDGRAM
+
+/**
+  LCD Write a string of characters - 4 bits
+  Writes string characters with some formatting
+*/
+void lcd_string(char *words, uint8_t num_chars);
 
 /**
   Outputs a byte of data to LEDs
