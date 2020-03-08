@@ -47,27 +47,12 @@
 #define TW_BUS_ERROR              0x00
 
 /**
-  Operation types, for custom functions
-*/
-#define READ  0x01
-#define WRITE 0x00
-#define DATA  0x01
-#define CMD   0x00
-
-/**
   PINOUT for PCF8574T to LCD control pins
 */
 #define PCF_RS                    0b00000001  //P0 - PCF8574T Pin connected to RS
 #define PCF_RW                    0b00000010  //P1 - PCF8574T Pin connected to RW
 #define PCF_ENABLE                0b00000100  //P2 - PCF8574T Pin connected to EN
 #define PCF_BACKLIGHT             0b00001000  //P3 - PCF8574T Pin connected to BACKLIGHT LED
-
-/**
-  TWI bus state list
-*/
-#define TWI_READY         0x01
-#define TWI_TRANSMITTING  0x02
-#define TWI_RECEIVING     0x03
 
 /**
   i2c LCD settings
@@ -102,79 +87,23 @@ void display_on(void);  // not the actual backlight
 void display_off(void); // not the actual backlight
 void screen_on(void);   // actual backlight -- turns on character display & backlight
 void screen_off(void); // actual backlight  -- turns off character display & backlight
+void lcd_init(void); // Initializes LCD screen
+void lcd_write(uint8_t byte); // LCD Write Command - 8 Bit
+void lcd_send(uint8_t byte); // LCD Write Command - 4 bit
+void lcd_dsend(uint8_t byte); // LCD Write Data - 4 bits
+void lcd_string(char *words, uint8_t num_chars); // LCD Write a string of characters - 4 bits
+void led_write(uint8_t byte); // Outputs a byte of data to LEDs
 
 /**
-  Initializes LCD screen
+  I2C specific functions
+  These functions aren't focused around controlling
+  an LCD display but the bus itself
 */
-void lcd_init(void);
-
-/**
-  LCD Write - 8 Bit
-  Encapsulation for I2C writing to LCD
-*/
-void lcd_write(uint8_t byte);
-
-/**
-  LCD Write - 4 bit
-  Encapsulation for I2C writing to LCD
-*/
-void lcd_send(uint8_t byte); // defaults to command
-
-/**
-  LCD Write - 4 bits
-  Writes specified byte of data to LCD(NOT FOR LCD COMMANDS)
-*/
-void lcd_dsend(uint8_t byte); // use this for writing actual data to DDGRAM
-
-/**
-  LCD Write a string of characters - 4 bits
-  Writes string characters with some formatting
-*/
-void lcd_string(char *words, uint8_t num_chars);
-
-/**
-  Outputs a byte of data to LEDs
-*/
-void led_write(uint8_t byte);
-
-/**
-  Initialize I2C bus without setting an address to become slave
-  Must receive bus & lcd structures
-*/
-void twi_init(void);
-
-/**
-  Sends start condition on bus
-*/
-unsigned char twi_start(void);
-
-/**
-  Set destination address of bus reads/writes
-*/
-void twi_set_addr(uint8_t addr);
-
-/**
-  Places specifed byte into buffer
-*/
-void twi_loadbuf(uint8_t byte);
-
-/**
-  Write byte of data onto bus
-*/
-unsigned char twi_write(void);
-
-/**
-  Send contained address on bus with specified WRITE bit(0)
-*/
-unsigned char twi_slaw(void);
-
-/**
-  Private function
-  Sends byte of data on bus
-*/
-unsigned char _send_byte(uint8_t byte);
-
-/**
-  Shutdown I2C hardware & exit the bus
-*/
-void twi_stop(void);
+void twi_init(void); // Initialize I2C bus
+unsigned char twi_start(void); // Sends start condition on bus
+void twi_set_addr(uint8_t addr); // Set destination address of bus reads/writes
+void twi_loadbuf(uint8_t byte); // Places specifed byte into buffer
+unsigned char twi_write(void); // Write byte of data onto bus
+unsigned char twi_slaw(void); // Send contained address on bus with specified WRITE bit(0)
+unsigned char _send_byte(uint8_t byte); // Private function sends byte of data on bus
+void twi_stop(void); // Shutdown I2C hardware & exit the bus
