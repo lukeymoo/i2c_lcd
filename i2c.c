@@ -46,6 +46,7 @@ void lcd_init(void)
 void display_on(void)
 {
   lcd_send(0x08 | 0x04);
+  cursor_on();
   return;
 }
 
