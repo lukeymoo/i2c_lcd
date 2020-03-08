@@ -65,6 +65,7 @@ void screen_on(void)
 {
   lcd.l_backlight = 1;
   lcd_send(0x08 | 0x04);
+  cursor_on();
   return;
 }
 
@@ -152,10 +153,6 @@ void twi_init(void)
   /* Defaults for LCD screen */
   lcd.l_addr = 0x27;                   // default PCF8574T LCD pair addr
   lcd.l_backlight = 0x04;
-  lcd.l_cursor = LCD_CURSOR_ON;
-  lcd.l_blink = LCD_BLINK_ON;
-  lcd.l_rows = LCD_SINGLE_ROW;
-  lcd.l_cols = LCD_16_COLS;
 
   /* Set up i2c hardware */
   TWSR = 0;   // No prescaler -- Prescaler is the lower 2 bits of status register

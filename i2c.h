@@ -70,34 +70,11 @@
 #define TWI_RECEIVING     0x03
 
 /**
-  LCD struct info, limited to 1 bit
-*/
-
-#define LCD_BACKLIGHT_ON  0x04
-#define LCD_BACKLIGHT_OFF 0x00
-
-#define LCD_DOUBLE_ROW    0x01
-#define LCD_SINGLE_ROW    0x00
-
-#define LCD_16_COLS       0x00
-#define LCD_20_COLS       0x01
-
-#define LCD_CURSOR_ON     0x01
-#define LCD_CURSOR_OFF    0x00
-
-#define LCD_BLINK_ON      0x01
-#define LCD_BLINK_OFF     0x00
-
-/**
   i2c LCD settings
 */
 struct i2c_lcd {
   uint8_t l_addr;          /* Slave device address                               || default 0x27 */
   uint8_t l_backlight;   /* Backlight on/off control                           || default 1 */
-  uint8_t l_cursor:1;      /* Cursor on/off control                              || default 1 */
-  uint8_t l_blink:1;       /* Cursor blinking on/off control                     || default 1 */
-  uint8_t l_rows:1;        /* number of rows :: 0 = single row, 1 = double row   || default 0 */
-  uint8_t l_cols:1;        /* Number of columns :: 0 = 16 cols , 1 = 20 cols     || default 0 */
 } lcd;
 
 /**

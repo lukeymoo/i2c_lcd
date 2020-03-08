@@ -6,7 +6,7 @@ int main(void)
 {
   twi_init();
   lcd_init();
-  lcd_string("[+] I2C Master\n", 34);
+  lcd_string("Waiting...\n>", 14);
 
   while(1) {
   }
