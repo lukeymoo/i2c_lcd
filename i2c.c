@@ -1,78 +1,42 @@
 #include "i2c.h"
 
-uint8_t success_message[] = ">Start condition ACK!";
-uint8_t fail_message[] = ">Sniffer failed!";
-
 /**
   HERE ARE THE FUNCTIONS FOR CONTROLLING THE LCD DISPLAY
   HELPS TO NOT NEED TO WRITE 0X80, 0X03 ETC FOR COMMANDS EVERYTIME
 */
 
-// Attempt to discover all devices on bus
-void sniff(void)
-{
-  // start at address 0x01 -> 0x7f
-  // we send start commands & then request addresses; followed by stop commands
-  uint8_t addr_count = 0;
-  unsigned char buffer[8];
-  clear_display();
-  lcd_string(">Sniffing...", 13);
-  _delay_ms(1500);
-  for(int i = 0x01; i < 0x7f; i++) {
-    if(twi_nop(i))
-      addr_count++;
-  }
-  clear_display();
-  itoa(addr_count, buffer, 10);
-  lcd_string(buffer, 8);
-  lcd_string(" Address(es)\nfound!", 21);
-  return;
-}
-
 /**
-  This only broadcasts i2c address range 1 at a time to discover devices on a bus
+  Encapsulating the initialization process for LCD
 */
-uint8_t twi_nop(uint8_t address)
+void lcd_init(void)
 {
-  uint8_t status = 0;
-  uint8_t tmp = bus.d_addr; // save current addr
-  bus.data = 0x00;
-  bus.d_addr = address; // load new one
-  twi_start(); // attempt to write 0x00
-  status = twi_slaw();
-  // restore old destination address
-  bus.d_addr = tmp;
-  char buffer[8];
-  itoa(address, buffer, 16);
-  if(status) {
-    clear_display();
-    lcd_string("Device found!\n", 15);
-    lcd_string("0x", 3);
-    lcd_string(buffer, 8);
-    _delay_ms(2000);
-  } else { // no ack
-    clear_display();
-    lcd_string("No device found\n", 17);
-    lcd_string("0x", 3);
-    lcd_string(buffer, 8);
-    _delay_ms(75);
-  }
-  return status;
-}
+  _delay_ms(50); // wait for LCD power on
 
-//test function to fill screen with characters
-void fill_screen(void)
-{
-  int a = 0x41;
-  for(int j = 0; j < 2; j++) {
-    for(int i = 0; i < 16; i++) {
-      // print I
-      lcd_dsend(a);
-      a++;
-      _delay_ms(20);
-    }
-    set_position(2, 0);
-  }
+  lcd_write(0x00);
+
+  lcd_write(0x03 << 4); // first we spam 8-bit function set
+  _delay_ms(5);
+
+  lcd_write(0x03 << 4); // spam 8-bit function set
+  _delay_ms(5);
+
+  lcd_write(0x03 << 4); // spam 8-bit function set
+  _delay_us(150);
+
+  lcd_write(0x02 << 4); // after 3 tries we can do a 4-bit function set
+
+  lcd_send(0x2c); // function set command :: 4-bits, 2 lines, all fonts || 0x24 for 1 line 5X10 dot
+
+  // FUNCTION -- display on, entry mode, cursor, blink
+  lcd_send(0x0f); // display control :: display on, cursor on, blink on
+
+  // FUNCTION -- Clear Screen -- This function needs AT LEAST 2
+  lcd_send(0x01); // This command takes more time
+  _delay_ms(5);
+
+  // FUNCTION -- MOVE TO LOCATION, 0x80 | 0x00 first spot on screen || RowxColumn ->> 0x00 1x1 :: 0x40 2x1
+  lcd_send(0x80); // set ddgram address (move cursor to beginning)
+
   return;
 }
 
@@ -227,12 +191,12 @@ void lcd_send(uint8_t byte)
 
   twi_loadbuf(byte_h | PCF_ENABLE | _displaycontrol);
   twi_write();
-  twi_loadbuf(byte_h & ~PCF_ENABLE | _displaycontrol);
+  twi_loadbuf((byte_h & ~PCF_ENABLE) | _displaycontrol);
   twi_write();
 
   twi_loadbuf(byte_l | PCF_ENABLE | _displaycontrol);
   twi_write();
-  twi_loadbuf(byte_l & ~PCF_ENABLE | _displaycontrol);
+  twi_loadbuf((byte_l & ~PCF_ENABLE) | _displaycontrol);
   twi_write();
   return;
 }
@@ -251,12 +215,12 @@ void lcd_dsend(uint8_t byte)
 
   twi_loadbuf(byte_h | PCF_RS | PCF_ENABLE | _displaycontrol);
   twi_write();
-  twi_loadbuf(byte_h | PCF_RS & ~PCF_ENABLE | _displaycontrol);
+  twi_loadbuf(byte_h | (PCF_RS & ~PCF_ENABLE) | _displaycontrol);
   twi_write();
 
   twi_loadbuf(byte_l | PCF_RS | PCF_ENABLE | _displaycontrol);
   twi_write();
-  twi_loadbuf(byte_l | PCF_RS & ~PCF_ENABLE | _displaycontrol);
+  twi_loadbuf(byte_l | (PCF_RS & ~PCF_ENABLE) | _displaycontrol);
   twi_write();
   return;
 }
@@ -360,7 +324,7 @@ unsigned char _send_byte(uint8_t byte)
   TWDR = byte; // load buffer
   TWCR = (1 << TWEN) | (1 << TWINT); // hardware operation
   while(!(TWCR & (1 << TWINT))); // wait
-  if(TWSR & 0xf8 == TW_MT_DATA_ACK) { // good data, return success
+  if((TWSR & 0xf8) == TW_MT_DATA_ACK) { // good data, return success
     return 1;
   }
   return 0;

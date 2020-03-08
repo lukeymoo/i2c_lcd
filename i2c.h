@@ -126,13 +126,10 @@ void display_off(void); // not the actual backlight
 void screen_on(void);   // actual backlight -- turns on character display & backlight
 void screen_off(void); // actual backlight  -- turns off character display & backlight
 
-//test function to fill screen with characters
-void fill_screen(void);
-
-// Attempt to discover all devices on bus
-void sniff(void);
-uint8_t twi_nop(uint8_t address);
-
+/**
+  Initializes LCD screen
+*/
+void lcd_init(void);
 
 /**
   LCD Write - 8 Bit
