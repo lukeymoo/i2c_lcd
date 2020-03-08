@@ -40,9 +40,7 @@ void lcd_init(void)
   return;
 }
 
-/**
-  Show/hide characters
-*/
+// Show display characters
 void display_on(void)
 {
   lcd_send(0x08 | 0x04);
@@ -50,18 +48,14 @@ void display_on(void)
   return;
 }
 
-/**
-  Show/hide characters
-*/
+// Hide display characters
 void display_off(void)
 {
   lcd_send(0x08);
   return;
 }
 
-/**
-  Turns on character display & the LED backlight
-*/
+// Turns on character display & backlight
 void screen_on(void)
 {
   lcd.l_backlight = 1;
@@ -70,9 +64,7 @@ void screen_on(void)
   return;
 }
 
-/**
-  Turns off character display & the LED backlight
-*/
+// Turns off character display & the LED backlight
 void screen_off(void)
 {
   lcd.l_backlight = 0;
@@ -80,9 +72,7 @@ void screen_off(void)
   return;
 }
 
-/**
-  Clears display and sets cursor position to 0,0
-*/
+// Clears display and sets cursor position to 0,0
 void clear_display(void)
 {
   // 0x01 is the clear display function
@@ -92,6 +82,7 @@ void clear_display(void)
   return;
 }
 
+// Sets cursor position to specified row/column
 void set_position(uint8_t row, uint8_t column)
 {
   // ensure row is less than 3, greater than 0
@@ -114,6 +105,7 @@ void set_position(uint8_t row, uint8_t column)
   return;
 }
 
+// display blinking cursor
 void cursor_on(void)
 {
   // use display control function 0x08
@@ -122,6 +114,7 @@ void cursor_on(void)
   return;
 }
 
+// hide blinking cursor
 void cursor_off(void)
 {
   // use display control function 0x08
