@@ -12,11 +12,11 @@
   A Boogie Wit da Hoodie - Me and My Guitar
   XXXTENTACION - MOONLIGHT
   Lil Peep - Save That Shit
-*/
+  */
 
 /**
   TWI operation return codes
-*/
+  */
 #define TW_START                  0x08
 #define TW_REP_START              0x10
 #define TW_MT_SLA_ACK             0x18
@@ -48,7 +48,7 @@
 
 /**
   PINOUT for PCF8574T to LCD control pins
-*/
+  */
 #define PCF_RS                    0b00000001  //P0 - PCF8574T Pin connected to RS
 #define PCF_RW                    0b00000010  //P1 - PCF8574T Pin connected to RW
 #define PCF_ENABLE                0b00000100  //P2 - PCF8574T Pin connected to EN
@@ -56,29 +56,32 @@
 
 /**
   i2c LCD settings
-*/
+  */
 struct i2c_lcd {
-  uint8_t l_addr;          /* Slave device address                               || default 0x27 */
-  uint8_t l_backlight;   /* Backlight on/off control                           || default 1 */
+	uint8_t l_addr;          /* Slave device address                               || default 0x27 */
+	uint8_t l_backlight;   /* Backlight on/off control                           || default 1 */
 } lcd;
 
 /**
   i2c bus settings
-*/
+  */
 struct i2c_bus {
-  uint8_t b_addr;    /* Contains address to be addressed as       || default 0 */
-  uint8_t d_addr;    /* Destination address */
-  uint8_t d_reg;     /* Destination register */
-  uint8_t data;      /* Contains data to be written or data received */
-  uint8_t b_state;   /* Tracks idle, transmitting, recieving, etc || default TW_READY */
-  uint8_t retval;    /* Holds success/fail of last bus activity */
+	uint8_t b_addr;	/* Contains address to be addressed as       || default 0 */
+	uint8_t d_addr;	/* Destination address */
+	uint8_t r_addr;	/* Read address */
+	uint8_t d_reg;	/* Destination register */
+	uint8_t data;	/* Contains data to be written or data received */
+	uint8_t retval;	/* Holds success/fail of last bus activity */
 } bus;
 
+
+// sniffs i2c bus
+void sniffer(void);
 
 /**
   HERE ARE THE FUNCTIONS FOR CONTROLLING THE LCD DISPLAY
   HELPS TO NOT NEED TO WRITE 0X80, 0X03 ETC FOR COMMANDS EVERYTIME
-*/
+  */
 void clear_display(void);
 void set_position(uint8_t row, uint8_t column);
 void cursor_on(void);
@@ -98,12 +101,13 @@ void led_write(uint8_t byte); // Outputs a byte of data to LEDs
   I2C specific functions
   These functions aren't focused around controlling
   an LCD display but the bus itself
-*/
+  */
 void twi_init(void); // Initialize I2C bus
-unsigned char twi_start(void); // Sends start condition on bus
 void twi_set_addr(uint8_t addr); // Set destination address of bus reads/writes
 void twi_loadbuf(uint8_t byte); // Places specifed byte into buffer
-unsigned char twi_write(void); // Write byte of data onto bus
-unsigned char twi_slaw(void); // Send contained address on bus with specified WRITE bit(0)
-unsigned char _send_byte(uint8_t byte); // Private function sends byte of data on bus
 void twi_stop(void); // Shutdown I2C hardware & exit the bus
+uint8_t twi_start(void); // Sends start condition on bus
+uint8_t twi_write(void); // Write byte of data onto bus
+uint8_t twi_slaw(void); // Send contained address on bus with specified WRITE bit(0)
+uint8_t twi_slar(void); // Send contained address on bus with specified READ bit(0)
+uint8_t _send_byte(uint8_t byte); // Private function sends byte of data on bus
