@@ -1,4 +1,4 @@
-#include "../twi/twi.h"
+#include "twi/twi.h"
 
 /**
 	Music to remember
