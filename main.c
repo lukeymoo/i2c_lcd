@@ -1,4 +1,4 @@
-#include "lcd/lcd_pcf8574t.h"
+#include "lcd_pcf8574t.h"
 
 int main(void)
 {

@@ -8,9 +8,9 @@
 /**
   PINOUT for PCF8574T to LCD control pins
 */
-#define PCF_RS			0x01  //P0 - PCF8574T Pin connected to RS
-#define PCF_RW			0x02  //P1 - PCF8574T Pin connected to RW
-#define PCF_ENABLE		0x04  //P2 - PCF8574T Pin connected to EN
+#define PCF_RS		0x01  //P0 - PCF8574T Pin connected to RS
+#define PCF_RW		0x02  //P1 - PCF8574T Pin connected to RW
+#define PCF_ENABLE	0x04  //P2 - PCF8574T Pin connected to EN
 #define PCF_BACKLIGHT	0x08  //P3 - PCF8574T Pin connected to BACKLIGHT LED
 
 
