@@ -81,7 +81,7 @@ uint8_t _lcd_write_nibble_cmd(uint8_t byte)
 	if(lcd.backlight) {
 		displayctrl |= 0x08;
 	}
-	// issue start command
+	// issue start command 
 	status = twi_start();
 	if(!status) { // bad start
 		twi_stop();
