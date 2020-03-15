@@ -18,7 +18,12 @@ struct i2c_lcd {
 	uint8_t addr;
 
 	// LCD traits
-	uint8_t backlight;
+	uint8_t rows;
+	uint8_t columns;
+	uint8_t backlight:1;
+	uint8_t characters:1;
+	uint8_t cursor:1;
+	uint8_t blink:1;
 } lcd;
 
 struct LCD_BYTE {
@@ -43,13 +48,14 @@ void screen_off(void); // turn off display and characters
 void clear_display(void);
 void characters_on(void);  // turn on/off character display
 void characters_off(void); // turn on/off character display
-void set_cursor_pos(uint8_t row, uint8_t column);
+void set_cursor_pos(uint8_t col, uint8_t row);
+void cursor_home(void); // returns cursor to beginning of DDGRAM
 
 
 /**
 	I2C operations
 */
-void lcd_init(uint8_t addr);
+void lcd_init(uint8_t addr, uint8_t columns, uint8_t rows);
 
 uint8_t _lcd_write_byte_data(uint8_t byte);
 uint8_t _lcd_write_byte_cmd(uint8_t byte);

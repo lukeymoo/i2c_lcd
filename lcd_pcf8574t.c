@@ -5,7 +5,7 @@
 */
 
 // calls HD44780U initialization procedures
-void lcd_init(uint8_t addr)
+void lcd_init(uint8_t addr, uint8_t cols, uint8_t rows)
 {
 	lcd_nibble.data = _lcd_write_nibble_data;
 	lcd_nibble.command = _lcd_write_nibble_cmd;
@@ -16,7 +16,12 @@ void lcd_init(uint8_t addr)
 
 	// default LCD traits
 	lcd.addr = addr;
+	lcd.cursor = 1;
+	lcd.blink = 1;
+	lcd.characters = 1;
 	lcd.backlight = 1;
+	lcd.rows = rows;
+	lcd.columns = cols;
 
 	_delay_ms(50); // wait for LCD power on
 
@@ -33,7 +38,11 @@ void lcd_init(uint8_t addr)
 
 	lcd_byte.command(0x02 << 4); // after 3 tries we can do a 4-bit function set
 
-	lcd_nibble.command(0x2c); // function set command :: 4-bits, 2 lines, all fonts || 0x24 for 1 line 5X10 dot
+	if(rows < 2) {
+		lcd_nibble.command(0x24);
+	} else {
+		lcd_nibble.command(0x2c); // function set command :: 4-bits, 2 lines, all fonts || 0x24 for 1 line 5X10 dot
+	}
 
 	// FUNCTION -- display on, entry mode, cursor, blink
 	lcd_nibble.command(0x0f); // display control :: display on, cursor on, blink on
@@ -221,7 +230,10 @@ uint8_t _lcd_write_nibble_string(uint8_t bytes[], uint8_t size)
 
 void cursor_on(void)
 {
-	uint8_t cmd = 0x08 | 0x03;
+	uint8_t cmd = 0x08 | 0x02;
+	lcd.cursor = 1;
+	(lcd.characters) 	? cmd |= 0x04 : (0);
+	(lcd.blink) 		? cmd |= 0x01 : (0);
 	// turn on cursor
 	lcd_nibble.command(cmd);
 	return;
@@ -230,17 +242,29 @@ void cursor_on(void)
 void cursor_off(void)
 {
 	uint8_t cmd = 0x08;
+	lcd.cursor = 0;
+	(lcd.characters) 	? cmd |= 0x04 : (0);
+	(lcd.blink) 		? cmd |= 0x01 : (0);
 	lcd_nibble.command(cmd);
 	return;
 }
 
 void screen_on(void)
 {
+	uint8_t cmd = 0x08;
+	lcd.backlight = 1;
+	(lcd.characters) 	? cmd |= 0x04 : (0);
+	(lcd.cursor) 		? cmd |= 0x02 : (0);
+	(lcd.blink) 		? cmd |= 0x01 : (0);
+	lcd_nibble.command(cmd);
 	return;
 }
 
 void screen_off(void)
 {
+	uint8_t cmd = 0x08;
+	lcd.backlight = 0;
+	lcd_nibble.command(cmd);
 	return;
 }
 
@@ -254,17 +278,49 @@ void clear_display(void)
 
 void characters_on(void)
 {
+	uint8_t cmd = 0x08 | 0x04;
+	lcd.characters = 1;
+	(lcd.cursor) 	? cmd |= 0x02 : (0);
+	(lcd.blink) 	? cmd |= 0x01 : (0);
+	lcd_nibble.command(cmd);
 	return;
 }
 
 void characters_off(void)
 {
+	uint8_t cmd = 0x08;
+	lcd.characters = 0;
+	lcd_nibble.command(cmd);
 	return;
 }
 
-void set_cursor_pos(uint8_t row, uint8_t column)
+void set_cursor_pos(uint8_t column, uint8_t row)
 {
-	uint8_t cmd = 0x80; // command LOGICAL OR with position line 2 starts 0x40
-	lcd_nibble.command(cmd | 0x40);
+	uint8_t cmd = 0x80;
+	// check bounds
+	if(column > lcd.columns) {
+		column = lcd.columns;
+	}
+	if(column < 1) {
+		column = 1;
+	}
+
+	if(row > lcd.rows) {
+		row = lcd.rows;
+	}
+	if(row < 1) {
+		row = 1;
+	}
+
+	(row == 2) ? cmd |= 0x40 : (0);
+	cmd |= (column - 1);
+	lcd_nibble.command(cmd);
+	return;
+}
+
+void cursor_home(void)
+{
+	uint8_t cmd = 0x02;
+	lcd_nibble.command(cmd);
 	return;
 }
