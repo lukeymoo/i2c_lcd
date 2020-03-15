@@ -81,7 +81,7 @@ uint8_t _lcd_write_nibble_cmd(uint8_t byte)
 	if(lcd.backlight) {
 		displayctrl |= 0x08;
 	}
-	// issue start command 
+	// issue start command
 	status = twi_start();
 	if(!status) { // bad start
 		twi_stop();
@@ -103,10 +103,22 @@ uint8_t _lcd_write_nibble_cmd(uint8_t byte)
 		return 0;
 	}
 
-	_send_byte((byte_h & ~PCF_ENABLE) | displayctrl); 	// enable low
+	status = twi_slaw(); // send SLA + W
+	if(!status) { // NACK, bad addr/not rdy for receiving
+		twi_stop();
+		return 0;
+	}
+
+	_send_byte((byte_h | displayctrl) & ~PCF_ENABLE); 	// enable low
 
 	status = twi_start();								// repeated start
 	if(!status) { // bad repeated start
+		twi_stop();
+		return 0;
+	}
+
+	status = twi_slaw(); // send SLA + W
+	if(!status) { // NACK, bad addr/not rdy for receiving
 		twi_stop();
 		return 0;
 	}
@@ -120,7 +132,13 @@ uint8_t _lcd_write_nibble_cmd(uint8_t byte)
 		return 0;
 	}
 
-	_send_byte((byte_l & ~PCF_ENABLE) | displayctrl); 	// enable low
+	status = twi_slaw(); // send SLA + W
+	if(!status) { // NACK, bad addr/not rdy for receiving
+		twi_stop();
+		return 0;
+	}
+
+	_send_byte((byte_l | displayctrl) & ~PCF_ENABLE); 	// enable low
 	twi_stop();
 	return 1;
 }
@@ -246,5 +264,7 @@ void characters_off(void)
 
 void set_cursor_pos(uint8_t row, uint8_t column)
 {
+	uint8_t cmd = 0x80; // command LOGICAL OR with position line 2 starts 0x40
+	lcd_nibble.command(cmd | 0x40);
 	return;
 }
