@@ -9,12 +9,12 @@ upload:
 all: main
 
 compile:
-	avr-gcc -Wall -g -mmcu=atmega328p -c -O1 main.c lcd/lcd_pcf8574t.c twi/twi.c -D F_CPU 16000000UL
+	avr-gcc -Wall -g -mmcu=atmega328p -c -O1 main.c lcd_pcf8574t.c twi/twi.c -D F_CPU 16000000UL
 	avr-gcc -Wall -g -mmcu=atmega328p -o main.elf lcd_pcf8574t.o twi.o main.o -D F_CPU 16000000UL
 	avr-objcopy -j .text -j .data -O ihex main.elf main.hex
 
-main: lcd/lcd_pcf8574t.c twi/twi.c
-	avr-gcc -Wall $(STRICTMODE) -g -mmcu=atmega328p -c -O2 main.c lcd/lcd_pcf8574t.c twi/twi.c -D F_CPU=16000000UL
+main: lcd_pcf8574t.c twi/twi.c
+	avr-gcc -Wall $(STRICTMODE) -g -mmcu=atmega328p -c -O2 main.c lcd_pcf8574t.c twi/twi.c -D F_CPU=16000000UL
 	avr-gcc -Wall -g -mmcu=atmega328p -o main.elf lcd_pcf8574t.o twi.o main.o -D F_CPU=16000000UL
 	avr-objcopy -j .text -j .data -O ihex main.elf main.hex
 

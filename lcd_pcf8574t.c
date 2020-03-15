@@ -16,11 +16,7 @@ void lcd_init(uint8_t addr)
 
 	// default LCD traits
 	lcd.addr = addr;
-	lcd.byte = 0;
-	lcd.characters = 1;
 	lcd.backlight = 1;
-	lcd.blink = 1;
-	lcd.cursor = 1;
 
 	_delay_ms(50); // wait for LCD power on
 
@@ -150,7 +146,7 @@ uint8_t _lcd_write_nibble_data(uint8_t byte)
 	if(!status) { // bad addr or device not rdy to receive
 		return 0;
 	}
-	_send_byte(byte_h | displayctrl | PCF_RS | PCF_ENABLE); 		// enable high
+	_send_byte(byte_h | displayctrl | PCF_RS | PCF_ENABLE); // enable high
 	twi_stop();
 
 	status = twi_start();
@@ -161,30 +157,30 @@ uint8_t _lcd_write_nibble_data(uint8_t byte)
 	if(!status) { // bad addr or device not rdy to receive
 		return 0;
 	}
-	_send_byte((byte_h | displayctrl | PCF_RS) & ~PCF_ENABLE); 		// enable low
+	_send_byte((byte_h | displayctrl | PCF_RS) & ~PCF_ENABLE); // enable low
 	twi_stop();
 
 										/**			LOW BITS			**/
 	status = twi_start();
 	if(!status) { // bad start
 		return 0;
-	}																// repeated start
+	}
 	status = twi_slaw();
 	if(!status) { // bad addr or device not rdy to receive
 		return 0;
 	}
-	_send_byte(byte_l | displayctrl | PCF_RS | PCF_ENABLE); 		// enable high
+	_send_byte(byte_l | displayctrl | PCF_RS | PCF_ENABLE); // enable high
 	twi_stop();
 
 	status = twi_start();
 	if(!status) { // bad start
 		return 0;
-	}																// repeated start
+	}
 	status = twi_slaw();
 	if(!status) { // bad addr or device not rdy to receive
 		return 0;
 	}
-	_send_byte((byte_l | displayctrl | PCF_RS) & ~PCF_ENABLE ); 	// enable low
+	_send_byte((byte_l | displayctrl | PCF_RS) & ~PCF_ENABLE ); // enable low
 	twi_stop();
 	return 1;
 }
@@ -205,8 +201,50 @@ uint8_t _lcd_write_nibble_string(uint8_t bytes[], uint8_t size)
 	return 1;
 }
 
-// Write a string of characters to display
-uint8_t lcd_string(char *words, uint8_t num_chars, int bitmode)
+void cursor_on(void)
 {
-	return 1;
+	uint8_t cmd = 0x08 | 0x03;
+	// turn on cursor
+	lcd_nibble.command(cmd);
+	return;
+}
+
+void cursor_off(void)
+{
+	uint8_t cmd = 0x08;
+	lcd_nibble.command(cmd);
+	return;
+}
+
+void screen_on(void)
+{
+	return;
+}
+
+void screen_off(void)
+{
+	return;
+}
+
+void clear_display(void)
+{
+	uint8_t cmd = 0x01;
+	lcd_nibble.command(cmd);
+	_delay_ms(5);
+	return;
+}
+
+void characters_on(void)
+{
+	return;
+}
+
+void characters_off(void)
+{
+	return;
+}
+
+void set_cursor_pos(uint8_t row, uint8_t column)
+{
+	return;
 }

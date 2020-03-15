@@ -4,7 +4,8 @@ int main(void)
 {
 	twi_init(0x27); // initialize TWI interface
 	lcd_init(0x27); // initialize the LCD
-	lcd_nibble.string((uint8_t *)"hello world", 12);
+	
+	clear_display();
 
 	// LEDs ON
 	DDRD = (1 << PD2) | (1 << PD4);
