@@ -13,7 +13,6 @@
 #define PCF_ENABLE 		0x04  //P2 - PCF8574T Pin connected to EN
 #define PCF_BACKLIGHT 	0x08  //P3 - PCF8574T Pin connected to BACKLIGHT LED
 
-
 struct i2c_lcd {
 	uint8_t addr;
 
@@ -50,7 +49,6 @@ void characters_on(void);  // turn on/off character display
 void characters_off(void); // turn on/off character display
 void set_cursor_pos(uint8_t col, uint8_t row);
 void cursor_home(void); // returns cursor to beginning of DDGRAM
-
 
 /**
 	I2C operations

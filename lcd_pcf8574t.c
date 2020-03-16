@@ -7,6 +7,7 @@
 // calls HD44780U initialization procedures
 void lcd_init(uint8_t addr, uint8_t cols, uint8_t rows)
 {
+	// Set functions
 	lcd_nibble.data = _lcd_write_nibble_data;
 	lcd_nibble.command = _lcd_write_nibble_cmd;
 	lcd_nibble.string = _lcd_write_nibble_string;
