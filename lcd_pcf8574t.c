@@ -105,7 +105,7 @@ uint8_t _lcd_write_nibble_cmd(uint8_t byte)
 	}
 
 	// HIGH BITS
-	_send_byte((byte_h | PCF_ENABLE) | displayctrl); 	// enable high
+	twi_send_byte((byte_h | PCF_ENABLE) | displayctrl); 	// enable high
 
 	status = twi_start(); 								// repeated start
 	if(!status) { // bad repeated start
@@ -119,7 +119,7 @@ uint8_t _lcd_write_nibble_cmd(uint8_t byte)
 		return 0;
 	}
 
-	_send_byte((byte_h | displayctrl) & ~PCF_ENABLE); 	// enable low
+	twi_send_byte((byte_h | displayctrl) & ~PCF_ENABLE); 	// enable low
 
 	status = twi_start();								// repeated start
 	if(!status) { // bad repeated start
@@ -134,7 +134,7 @@ uint8_t _lcd_write_nibble_cmd(uint8_t byte)
 	}
 
 	// LOW BITS
-	_send_byte((byte_l | PCF_ENABLE) | displayctrl); 	// enable high
+	twi_send_byte((byte_l | PCF_ENABLE) | displayctrl); 	// enable high
 
 	status = twi_start();								// repeated start
 	if(!status) { // bad repeated start
@@ -148,7 +148,7 @@ uint8_t _lcd_write_nibble_cmd(uint8_t byte)
 		return 0;
 	}
 
-	_send_byte((byte_l | displayctrl) & ~PCF_ENABLE); 	// enable low
+	twi_send_byte((byte_l | displayctrl) & ~PCF_ENABLE); 	// enable low
 	twi_stop();
 	return 1;
 }
@@ -174,7 +174,7 @@ uint8_t _lcd_write_nibble_data(uint8_t byte)
 	if(!status) { // bad addr or device not rdy to receive
 		return 0;
 	}
-	_send_byte(byte_h | displayctrl | PCF_RS | PCF_ENABLE); // enable high
+	twi_send_byte(byte_h | displayctrl | PCF_RS | PCF_ENABLE); // enable high
 	twi_stop();
 
 	status = twi_start();
@@ -185,7 +185,7 @@ uint8_t _lcd_write_nibble_data(uint8_t byte)
 	if(!status) { // bad addr or device not rdy to receive
 		return 0;
 	}
-	_send_byte((byte_h | displayctrl | PCF_RS) & ~PCF_ENABLE); // enable low
+	twi_send_byte((byte_h | displayctrl | PCF_RS) & ~PCF_ENABLE); // enable low
 	twi_stop();
 
 										/**			LOW BITS			**/
@@ -197,7 +197,7 @@ uint8_t _lcd_write_nibble_data(uint8_t byte)
 	if(!status) { // bad addr or device not rdy to receive
 		return 0;
 	}
-	_send_byte(byte_l | displayctrl | PCF_RS | PCF_ENABLE); // enable high
+	twi_send_byte(byte_l | displayctrl | PCF_RS | PCF_ENABLE); // enable high
 	twi_stop();
 
 	status = twi_start();
@@ -208,7 +208,7 @@ uint8_t _lcd_write_nibble_data(uint8_t byte)
 	if(!status) { // bad addr or device not rdy to receive
 		return 0;
 	}
-	_send_byte((byte_l | displayctrl | PCF_RS) & ~PCF_ENABLE ); // enable low
+	twi_send_byte((byte_l | displayctrl | PCF_RS) & ~PCF_ENABLE ); // enable low
 	twi_stop();
 	return 1;
 }
